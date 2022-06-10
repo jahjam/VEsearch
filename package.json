@@ -1,0 +1,22 @@
+{
+  "name": "vesearch",
+  "version": "1.0.0",
+  "description": "Vegan recipe search engine",
+  "main": "model.js",
+  "scripts": {
+    "start": "parcel index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dreamingOfSoy/VEsearch.git"
+  },
+  "author": "ejmainwaring",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dreamingOfSoy/VEsearch/issues"
+  },
+  "homepage": "https://github.com/dreamingOfSoy/VEsearch#readme",
+  "devDependencies": {
+    "parcel": "^2.3.1"
+  }
+}
