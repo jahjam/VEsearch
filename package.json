@@ -2,9 +2,9 @@
   "name": "vesearch",
   "version": "1.0.0",
   "description": "Vegan recipe search engine",
-  "main": "model.js",
   "scripts": {
-    "start": "parcel index.html"
+    "start": "parcel index.html",
+    "build": "parcel build index.html --dist-dir ./dist"
   },
   "repository": {
     "type": "git",
