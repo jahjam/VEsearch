@@ -23,3 +23,31 @@ export const getJSON = async function (url) {
     throw err;
   }
 };
+
+export const renderLoadingIcon = function (parentEl) {
+  const markup = `
+  <div class="dot-pulse">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>`;
+
+  parentEl.innerHTML = '';
+  parentEl.insertAdjacentHTML('afterbegin', markup);
+};
+
+export const renderErrorMsg = function (
+  parentEl,
+  message = 'Recipe failed to load, try refreshing the page...'
+) {
+  const markup = `
+    <div div class="error">
+        <p class="error-msg">
+          ${message}
+        </p>    
+     </div>
+`;
+
+  parentEl.innerHTML = '';
+  parentEl.insertAdjacentHTML('afterbegin', markup);
+};

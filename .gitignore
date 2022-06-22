@@ -3,3 +3,5 @@ dist
 .prettierrc
 .parcel-cache
 .DS_Store
+src/config.js
+imgs

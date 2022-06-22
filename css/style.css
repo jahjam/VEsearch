@@ -176,7 +176,7 @@ a:hover {
 
 .recipe-results {
   padding: 2rem;
-  max-width: 80rem;
+  max-width: 84.4rem;
   height: 24rem;
 
   overflow: hidden;
@@ -195,7 +195,7 @@ a:hover {
 
 .results-box {
   height: 20rem;
-  min-width: 17.5rem;
+  min-width: 18.5rem;
   padding: 0.6rem;
   border: 0.2rem solid black;
   background-color: #a4d2ac;
@@ -267,7 +267,7 @@ a:hover {
 /* ************************ */
 
 .recipe-listing-section {
-  width: 80%;
+  width: 100rem;
   padding: 1.6rem;
   border: 0.2rem solid black;
 }

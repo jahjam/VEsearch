@@ -1,5 +1,22 @@
-import { baseURL } from './config';
-import { getJSON } from './helper';
+import { baseURL, API_ID, API_KEY, NEGATE_PADDING } from './config';
+import { getJSON, renderLoadingIcon, renderErrorMsg } from './helper';
+
+const searchBtn = document.querySelector('.search-button');
+const searchInput = document.querySelector('.search-input');
+const resultsSection = document.querySelector('.recipe-results-section');
+const resultsBox = document.querySelector('.recipe-results');
+const recipeContainer = document.querySelector('.recipe-container');
+const rightArrow = document.querySelector('.right-arrow');
+const leftArrow = document.querySelector('.left-arrow');
+const recipeListing = document.querySelector('.recipe-listing-section');
+const recipeListingContainer = document.querySelector(
+  '.recipe-listing-container'
+);
+const recipeFooterSection = document.querySelector('.source-link-section');
+
+// ***************************** //
+// DATA
+// ***************************** //
 
 const state = {
   search: {
@@ -9,13 +26,18 @@ const state = {
   recipe: {},
 };
 
-if (module.hot) {
-  module.hot.accept();
-}
+let width;
+let currentSlide = 0;
 
 // ***************************** //
 // LOAD RESULTS AND DISPLAY THEM
 // ***************************** //
+
+const pressEnterKey = e => {
+  if (e.keyCode === 13) {
+    showSearchResults();
+  }
+};
 
 const loadRecipeResults = async function (query) {
   try {
@@ -33,48 +55,9 @@ const loadRecipeResults = async function (query) {
         imgURL: hit.recipe.image,
       };
     });
-    console.log(hits);
   } catch (err) {
     throw err;
   }
-};
-
-const searchBtn = document.querySelector('.search-button');
-const searchInput = document.querySelector('.search-input');
-const resultsSection = document.querySelector('.recipe-results-section');
-const resultsBox = document.querySelector('.recipe-results');
-const recipeContainer = document.querySelector('.recipe-container');
-const rightArrow = document.querySelector('.right-arrow');
-const leftArrow = document.querySelector('.left-arrow');
-
-let width;
-
-const renderLoadingIcon = function (parentEl) {
-  const markup = `
-  <div class="dot-pulse">
-    <div class="dot"></div>
-    <div class="dot"></div>
-    <div class="dot"></div>
-  </div>`;
-
-  parentEl.innerHTML = '';
-  parentEl.insertAdjacentHTML('afterbegin', markup);
-};
-
-const renderErrorMsg = function (
-  parentEl,
-  message = 'Recipe failed to load, try refreshing the page...'
-) {
-  const markup = `
-    <div div class="error">
-        <p class="error-msg">
-          ${message}
-        </p>    
-     </div>
-`;
-
-  parentEl.innerHTML = '';
-  parentEl.insertAdjacentHTML('afterbegin', markup);
 };
 
 const showSearchResults = async function () {
@@ -90,7 +73,7 @@ const showSearchResults = async function () {
       recipeContainer.insertAdjacentHTML('beforeend', generateMarkup(result))
     );
     searchInput.value = '';
-    width = resultsBox.clientWidth + 4 - 20;
+    width = +resultsBox.clientWidth - NEGATE_PADDING;
 
     resultsBox.addEventListener('click', function (e) {
       const allResults = document.querySelectorAll('.results-box');
@@ -119,8 +102,6 @@ const generateMarkup = recipe => `
         </a>
     `;
 
-let currentSlide = 0;
-
 const slideResultsLeft = function () {
   if (currentSlide < state.search.results.length - 4) {
     currentSlide++;
@@ -139,28 +120,9 @@ const slideResultsRight = function () {
   }
 };
 
-const pressEnterKey = e => {
-  if (e.keyCode === 13) {
-    showSearchResults();
-  }
-};
-
-searchBtn.addEventListener('click', showSearchResults);
-searchInput.addEventListener('keydown', pressEnterKey);
-rightArrow.addEventListener('click', slideResultsLeft);
-leftArrow.addEventListener('click', slideResultsRight);
-
 // ***************************** //
 // LOAD RECIPE AND DISPLAY IT
 // ***************************** //
-
-const recipeListing = document.querySelector('.recipe-listing-section');
-
-const recipeListingContainer = document.querySelector(
-  '.recipe-listing-container'
-);
-
-const recipeFooterSection = document.querySelector('.source-link-section');
 
 const loadRecipe = async function (id) {
   try {
@@ -168,7 +130,7 @@ const loadRecipe = async function (id) {
     renderLoadingIcon(recipeListingContainer);
 
     const data = await getJSON(
-      `https://api.edamam.com/api/recipes/v2/${id}?type=public&app_id=64090b3f&app_key=863ec5c1694689e9e7474e4a313d6ed5`
+      `https://api.edamam.com/api/recipes/v2/${id}?type=public&app_id=${API_ID}&app_key=${API_KEY}`
     );
 
     const { recipe } = data;
@@ -220,7 +182,6 @@ const showRecipe = async function () {
       generateFooterMarkup(state.recipe)
     );
   } catch (err) {
-    // console.error(err);
     renderErrorMsg(recipeListingContainer);
   }
 };
@@ -274,7 +235,7 @@ const generateRecipeMarkup = recipe => `
           <h3>Nutritional Facts</h3>
           <h4>(Estimated per serving)</h4>
           <ul class="nooch-list">
-            <li class="nooch-box"><p        class="nooch-title">Energy</p><p class= "nooch-amount">${(
+            <li class="nooch-box"><p class="nooch-title">Energy</p><p class= "nooch-amount">${(
               recipe.calories / recipe.servings
             ).toFixed(0)}g</p><p  class="nooch-perc">${(
   recipe.nutrition.ENERC_KCAL.quantity / recipe.servings
@@ -372,17 +333,22 @@ const generateFooterMarkup = recipe => {
       <span class="source-recipe-company">${recipe.publisher}</span>. For
       instructions on how to cook it, visit their website here:</span
     >
-    <a href="${recipe.sourceUrl}" class="source-link"
+    <a href="${recipe.sourceUrl}" class="source-link" target="_blank"
       ><button class="btn source-link-button">Cook it!</button></a
     >
   `;
 };
 
-['hashchange', 'load'].forEach(ev => window.addEventListener(ev, showRecipe));
-
 // ***************************** //
 // UPDATE SERVINGS
 // ***************************** //
+
+const recipeServingsBtns = function (e) {
+  const servingsBtn = e.target.closest('.servings-button');
+  if (!servingsBtn) return;
+  const { updateTo } = servingsBtn.dataset;
+  if (+updateTo > 0) updateServings(+updateTo);
+};
 
 const updateServings = function (newServings) {
   state.recipe.ingredients.forEach(ing => {
@@ -402,8 +368,6 @@ const updateServings = function (newServings) {
     });
   });
 
-  console.log(state.recipe.ingredients);
-
   state.recipe.servings = newServings;
 
   const newMarkup = generateRecipeMarkup(state.recipe);
@@ -415,9 +379,8 @@ const updateServings = function (newServings) {
   newElements.forEach((newEl, i) => {
     const curEl = curElements[i];
 
-    if (!newEl.isEqualNode(curEl) && newEl.classList.contains('quantity')) {
+    if (!newEl.isEqualNode(curEl) && newEl.classList.contains('quantity'))
       curEl.textContent = newEl.textContent;
-    }
 
     if (!newEl.isEqualNode(curEl)) {
       Array.from(newEl.attributes).forEach(attr =>
@@ -427,9 +390,13 @@ const updateServings = function (newServings) {
   });
 };
 
-recipeListing.addEventListener('click', function (e) {
-  const servingsBtn = e.target.closest('.servings-button');
-  if (!servingsBtn) return;
-  const { updateTo } = servingsBtn.dataset;
-  if (+updateTo > 0) updateServings(+updateTo);
-});
+// ***************************** //
+// EVENT HANDLERS
+// ***************************** //
+
+searchBtn.addEventListener('click', showSearchResults);
+searchInput.addEventListener('keydown', pressEnterKey);
+rightArrow.addEventListener('click', slideResultsLeft);
+leftArrow.addEventListener('click', slideResultsRight);
+recipeListing.addEventListener('click', recipeServingsBtns);
+['hashchange', 'load'].forEach(ev => window.addEventListener(ev, showRecipe));
