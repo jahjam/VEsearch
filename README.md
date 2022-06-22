@@ -6,4 +6,6 @@ During the building of this app I learned more about functions, advanced DOM man
 
 I could have added some sort of bookmarking feature to this app (using local storage), however, I felt the minimalist design would have been compromised and instead decided to use local storage on a future project. I feel this is an important part of designing web apps, as over-designing can make an app feel clunky or look messy. I prefer to stick to a clean style.
 
+The most important thing I learned from this specific project is the importance of file management, and having a project architecture before going beginning. This will help not only keep the file organisation tidy but also keep the code readable and easier to debug.
+
 For the time being I've included a 'config-example.js' file in this repository which simply needs renaming to 'config.js' in which one can add their own key if they wish to use this app.
