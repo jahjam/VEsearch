@@ -75,6 +75,8 @@ const showSearchResults = async function () {
     searchInput.value = '';
     width = +resultsBox.clientWidth - NEGATE_PADDING;
 
+    console.log(resultsBox.getBoundingClientRect());
+
     resultsBox.addEventListener('click', function (e) {
       const allResults = document.querySelectorAll('.results-box');
       allResults.forEach(box => box.classList.remove('results-box--active'));
